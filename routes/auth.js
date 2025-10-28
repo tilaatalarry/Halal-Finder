@@ -8,8 +8,7 @@ dotenv.config();
 
 const router = express.Router();
 
-router.post(
-  "/signup",
+router.post( "/signup",
   [
     body("name").notEmpty(),
     body("email").isEmail(),

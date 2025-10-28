@@ -323,3 +323,51 @@ body {
   color: #3ca67a;
   text-decoration: none;
 }
+
+.modal {
+  position: fixed;
+  top: 20px; 
+  left: 50%;
+  transform: translateX(-50%);
+  width: 320px;
+  max-width: 400px;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+  text-align: center;
+  z-index: 999;
+  transition: all 0.3s ease;
+  font-family: sans-serif;
+  display: flex;
+}
+
+.modal p {
+  margin-bottom: 15px;
+  font-size: 1rem;
+  color: #333;
+}
+
+.modal button {
+  padding: 8px 16px;
+  margin: 5px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#allow-location {
+  background-color: #3ca67a;
+  color: white;
+}
+
+#deny-location {
+  background-color: #fff;
+  color: #3ca67a;
+  border: 1.5px solid #3ca67a;
+}
+
+.hidden {
+  display: none;
+}

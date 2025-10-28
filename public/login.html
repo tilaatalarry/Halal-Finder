@@ -14,12 +14,12 @@
       <input type="password" id="password" placeholder="Password" required />
       <button type="submit">Login</button>
     </form>
-    <p>Don't have an account? <a href="register.html">Register</a></p>
+    <p>Don't have an account? <a href="signup.html">Register</a></p>
     <p id="message"></p>
   </div>
 
   <script>
-    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
       e.preventDefault();
 
       const email = document.getElementById("email").value;
@@ -37,15 +37,15 @@
       if (res.ok) {
         msg.textContent = "Login successful! Redirecting...";
         msg.style.color = "green";
-
         localStorage.setItem("token", data.token);
-
+        localStorage.setItem("user", JSON.stringify(data.user));
         setTimeout(() => window.location.href = "index.html", 2000);
-      } else {
-        msg.textContent = data.message || "Invalid credentials.";
-        msg.style.color = "red";
-      }
-    });
+    
+    } else {
+      msg.textContent = data.message || "Invalid credentials.";
+      msg.style.color = "red";
+    }
+  });
   </script>
 </body>
 </html>
