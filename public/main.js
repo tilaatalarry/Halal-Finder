@@ -77,7 +77,7 @@ function setUserLocation(location) {
 
 async function fetchHalalSpots(query, type = "all") {
   try {
-    const response = await fetch(`http://localhost:5000/api/halal?query=${encodeURIComponent(query)}`);
+    const response = await fetch(`http://localhost:5000/api/halal?query=${encodeURIComponent(query)}&{encodeURIComponent(type)}`);
     const data = await response.json();
 
     const filteredData = type === "all" ? data : data.filter((spot) => spot.type === type);
