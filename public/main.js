@@ -17,55 +17,193 @@ window.addEventListener("DOMContentLoaded", () => {
   const locationModal = document.getElementById("location-permission");
   const allowBtn = document.getElementById("allow-location");
   const denyBtn = document.getElementById("deny-location");
+  const addSpotModal = document.getElementById("addspot-modal");
+  const closeAddSpot = document.getElementById("close-addspot");
+  const addSpotBtn = document.getElementById("add-spot-btn");
+  const signupModal = document.getElementById("signup-modal");
+  const closeSignup = document.getElementById("close-signup");
+  const loginModal = document.getElementById("login-modal");
+  const closeLogin = document.getElementById("close-login");
 
-  if (locationModal) {
-    locationModal.classList.remove("hidden");
-  }
+  addSpotBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem("token");
+    if (!token) {
+      loginModal.style.display = "flex"; 
+      document.body.classList.add("blurred");
+    } else {
+      addSpotModal.style.display = "flex";
+      document.body.classList.add("blurred");
+    } 
+  });
+
+  closeAddSpot.addEventListener("click", () => {
+    addSpotModal.style.display = "none";
+    document.body.classList.remove("blurred");
+  });
+
+  addSpotModal.addEventListener("click", (e) => {
+    if (e.target === addSpotModal) {
+      addSpotModal.style.display = "none";
+      document.body.classList.remove("blurred");
+    }
+  });
+
+  if (locationModal) locationModal.classList.remove("hidden");
 
   if (allowBtn) {
     allowBtn.addEventListener("click", () => {
-      console.log("Allow clicked");
       locationModal.classList.add("hidden");
-
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            setUserLocation({
-              lat: pos.coords.latitude,
-              lng: pos.coords.longitude,
-            });
-          },
+          (pos) => setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
           (err) => console.warn("Geolocation failed:", err)
         );
       }
     });
   }
 
-  if (denyBtn) {
-    denyBtn.addEventListener("click", () => {
-      console.log("Deny clicked");
-      locationModal.classList.add("hidden");
+  if (denyBtn) denyBtn.addEventListener("click", () => locationModal.classList.add("hidden"));
+
+  const token = localStorage.getItem("token");
+  if (token && addSpotBtn) {
+    addSpotBtn.addEventListener("click", () => {
+      window.location.href = "addspot.html"; // user already logged in
+    });
+  } else if (addSpotBtn) {
+    addSpotBtn.addEventListener("click", () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        signupModal.style.display = "flex";
+        document.body.classList.add("blurred");
+      } else {
+        window.location.href = "addspot.html";
+      }
     });
   }
+
+  closeSignup?.addEventListener("click", () => closeModal(signupModal));
+  closeLogin?.addEventListener("click", () => closeModal(loginModal));
+
+  signupModal?.addEventListener("click", (e) => { if (e.target === signupModal) closeModal(signupModal); });
+  loginModal?.addEventListener("click", (e) => { if (e.target === loginModal) closeModal(loginModal); });
+
+  function closeModal(modal) {
+    modal.style.display = "none";
+    document.body.classList.remove("blurred");
+  }
+
+  document.getElementById("signup-form")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const msg = document.getElementById("signup-message");
+
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        msg.textContent = "Signup successful! Redirecting to login...";
+        msg.style.color = "green";
+        setTimeout(() => {
+          closeModal(signupModal);
+          loginModal.style.display = "flex";
+          document.body.classList.add("blurred");
+        }, 1000);
+      } else {
+        msg.textContent = data.message || "Signup failed!";
+        msg.style.color = "red";
+      }
+    } catch (err) {
+      console.error(err);
+      msg.textContent = "Server error.";
+      msg.style.color = "red";
+    }
+  });
+
+  // Login form
+  document.getElementById("login-form")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("login-email").value;
+    const password = document.getElementById("login-password").value;
+    const msg = document.getElementById("login-message");
+
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        localStorage.setItem("token", data.token);
+        closeModal(loginModal);
+        window.location.href = "index.html";
+      } else {
+        msg.textContent = data.message || "Login failed!";
+        msg.style.color = "red";
+      }
+    } catch (err) {
+      console.error(err);
+      msg.textContent = "Server error.";
+      msg.style.color = "red";
+    }
+  });
 });
 
-document.getElementById("add-spot-btn").addEventListener("click", () => {
-  const token = localStorage.getItem("token");
+document.getElementById("addspot-form")?.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-  if (!token) {
-    alert("You need an account to add a spot.");
-    window.location.href = "signup.html";
-  } else {
-    document.getElementById("add-spot-form").style.display = "block";
+  const name = document.getElementById("spot-name").value;
+  const address = document.getElementById("spot-address").value;
+  const type = document.getElementById("spot-type").value;
+  const lat = document.getElementById("spot-lat").value;
+  const lng = document.getElementById("spot-lng").value;
+  const image = document.getElementById("spot-image").value;
+  const msg = document.getElementById("addspot-message");
+
+  try {
+    const token = localStorage.getItem("token");
+    const res = await fetch("http://localhost:5000/api/halal", {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ name, address, type, lat, lng, image })
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      msg.textContent = "Spot added successfully!";
+      msg.style.color = "green";
+      setTimeout(() => {
+        addSpotModal.style.display = "none";
+        document.body.classList.remove("blurred");
+        window.location.reload(); // refresh to show new spot
+      }, 1200);
+    } else {
+      msg.textContent = data.message || "Failed to add spot";
+      msg.style.color = "red";
+    }
+  } catch (err) {
+    console.error(err);
+    msg.textContent = "Server error";
+    msg.style.color = "red";
   }
 });
 
 function setUserLocation(location) {
-  if (!map) {
-    console.error("Map not initialized yet!");
-    return;
-  }
-
+  if (!map) return console.error("Map not initialized yet!");
   map.setCenter(location);
   new google.maps.Marker({
     position: location,
@@ -77,9 +215,10 @@ function setUserLocation(location) {
 
 async function fetchHalalSpots(query, type = "all") {
   try {
-    const response = await fetch(`http://localhost:5000/api/halal?query=${encodeURIComponent(query)}&{encodeURIComponent(type)}`);
+    const response = await fetch(
+      `http://localhost:5000/api/halal?query=${encodeURIComponent(query)}&${encodeURIComponent(type)}`
+    );
     const data = await response.json();
-
     const filteredData = type === "all" ? data : data.filter((spot) => spot.type === type);
     renderResults(filteredData);
   } catch (err) {
@@ -87,15 +226,13 @@ async function fetchHalalSpots(query, type = "all") {
   }
 }
 
+// Render results
 function renderResults(data) {
   const resultsDiv = document.getElementById("results");
   resultsDiv.innerHTML = "";
   clearMarkers();
 
-  if (!data.length) {
-    resultsDiv.innerHTML = "<p>No halal spots found.</p>";
-    return;
-  }
+  if (!data.length) return resultsDiv.innerHTML = "<p>No halal spots found.</p>";
 
   data.forEach((place) => {
     createSpotCard(place);
@@ -103,6 +240,7 @@ function renderResults(data) {
   });
 }
 
+// Spot cards
 function createSpotCard(place) {
   const resultsDiv = document.getElementById("results");
   const card = document.createElement("div");
@@ -117,11 +255,10 @@ function createSpotCard(place) {
   `;
   resultsDiv.appendChild(card);
 
-  card.addEventListener("click", () => {
-    focusOnMarker(place);
-  });
+  card.addEventListener("click", () => focusOnMarker(place));
 }
 
+// Map markers
 function createMapMarker(place) {
   const marker = new google.maps.Marker({
     position: { lat: parseFloat(place.lat), lng: parseFloat(place.lng) },
@@ -129,10 +266,7 @@ function createMapMarker(place) {
     title: place.name,
   });
 
-  const infoWindow = new google.maps.InfoWindow({
-    content: `<div style="font-weight:600;">${place.name}</div>`,
-  });
-
+  const infoWindow = new google.maps.InfoWindow({ content: `<div style="font-weight:600;">${place.name}</div>` });
   marker.addListener("click", () => infoWindow.open(map, marker));
   markers.push(marker);
 }
@@ -145,35 +279,4 @@ function focusOnMarker(place) {
 function clearMarkers() {
   markers.forEach((marker) => marker.setMap(null));
   markers = [];
-}
-
-const searchInput = document.getElementById("search-input");
-const filters = document.querySelectorAll(".filter");
-
-searchInput.addEventListener("input", handleSearchInput);
-filters.forEach((button) => button.addEventListener("click", handleFilterClick));
-
-function handleSearchInput() {
-  const query = searchInput.value.trim();
-  const activeType = document.querySelector(".filter.active").dataset.type;
-  fetchHalalSpots(query, activeType);
-}
-
-function handleFilterClick(e) {
-  filters.forEach((btn) => btn.classList.remove("active"));
-  e.target.classList.add("active");
-  const query = searchInput.value.trim();
-  fetchHalalSpots(query, e.target.dataset.type);
-}
-
-const addSpotBtn = document.getElementById("add-spot-btn");
-if (addSpotBtn) {
-  addSpotBtn.addEventListener("click", () => {
-    const token = localStorage.getItem("token"); 
-    if (!token) {
-      window.location.href = "/signup.html";
-    } else {
-      window.location.href = "/addspot.html";
-    }
-  });
 }
