@@ -20,8 +20,12 @@
   <header class="topbar">
     <div class="logo">Halal Finder</div>
     <div class="nav-actions">
-       <button id="add-spot-btn" class="add-spot-btn">Add Spot</button>
-      <img src="profile.png" alt="Profile" class="profile" />
+       <button id="add-spot-btn" class="add-spot-btn" type="button">Add Spot</button>
+       <img id="profile-icon" src="profile.png" alt="Profile" class="profile" />
+       <div id="profile-menu" class="profile-menu hidden" aria-hidden="true">
+        <div id="profile-user" class="profile-user">Not signed in</div>
+        <button id="logout-btn" class="logout-btn">Logout</button>
+      </div>
     </div>
   </header>
 
@@ -85,12 +89,17 @@
     <span id="close-addspot" class="close-btn">&times;</span>
     <h2>Add a Halal Spot</h2>
     <form id="addspot-form">
-      <input type="text" id="spot-name" placeholder="Spot Name" required />
-      <input type="text" id="spot-address" placeholder="City/Area" required />
-      <input type="text" id="spot-type" placeholder="Type (Restaurant, Mosque, Store)" required />
-      <input type="text" id="spot-lat" placeholder="Latitude" required />
-      <input type="text" id="spot-lng" placeholder="Longitude" required />
-      <input type="text" id="spot-image" placeholder="Image URL" />
+      <input type="text" id="name" placeholder="Spot Name" required />
+      <input type="text" id="address" placeholder="City/Area" required />
+      <input type="text" id="type" placeholder="Type (Restaurant, Mosque, Store)" required />
+      <input type="number" id="rating" placeholder="Rating (1-5)" min="1" max="5" step="0.1" />
+      <input type="text" id="lat" placeholder="Latitude" readonly />
+      <input type="text" id="lng" placeholder="Longitude" readonly />
+      <div class="upload--section">
+        <label for =spot-image>Upload Image</label>
+        <input type="file" id="image" accept="image/*" />
+      </div>
+      <p id="location-status">Detecting location...</p>
       <button type="submit">Add Spot</button>
     </form>
     <p id="addspot-message"></p>

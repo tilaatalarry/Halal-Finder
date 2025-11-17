@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    table { border-collapse: collapse; width: 100%; margin-bottom: 40px; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+    th { background-color: #f2f2f2; }
+    button { margin-right: 5px; padding: 5px 10px; cursor: pointer; }
+    .approved { color: green; }
+    .rejected { color: red; }
+    .pending { color: orange; }
+    #loginForm { margin-bottom: 30px; }
+    #loginForm input { margin-right: 10px; padding: 5px; }
+  </style>
+</head>
+<body>
+
+<h1>Admin Dashboard</h1>
+
+<!-- Admin login form -->
+<div id="loginDiv">
+  <h2>Admin Login</h2>
+  <form id="loginForm">
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <button type="submit">Login</button>
+  </form>
+  <p id="loginError" style="color:red;"></p>
+</div>
+
+<!-- Dashboard content -->
+<div id="dashboard" style="display:none;">
+  <h2>Halal Spots</h2>
+  <table id="spotsTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Address</th>
+        <th>Type</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <h2>Users</h2>
+  <table id="usersTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Role</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<script>
+const BASE_URL = "http://localhost:5000";
+let token = localStorage.getItem("token");
+
+// DOM elements
+const loginDiv = document.getElementById("loginDiv");
+const dashboardDiv = document.getElementById("dashboard");
+const loginForm = document.getElementById("loginForm");
+const loginError = document.getElementById("loginError");
+const spotsTableBody = document.querySelector("#spotsTable tbody");
+const usersTableBody = document.querySelector("#usersTable tbody");
+
+// If token exists, show dashboard
+if (token) {
+  loginDiv.style.display = "none";
+  dashboardDiv.style.display = "block";
+  fetchSpots();
+  fetchUsers();
+}
+
+// Handle login form
+loginForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  loginError.textContent = "";
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  try {
+    const res = await fetch(`${BASE_URL}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      loginError.textContent = data.message || "Login failed";
+      return;
+    }
+
+    token = data.token;
+    localStorage.setItem("token", token);
+
+    loginDiv.style.display = "none";
+    dashboardDiv.style.display = "block";
+
+    fetchSpots();
+    fetchUsers();
+
+  } catch (err) {
+    console.error(err);
+    loginError.textContent = "Server error";
+  }
+});
+
+// Helper to add Authorization header
+function getAuthHeaders() {
+  return { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" };
+}
+
+// Fetch spots
+async function fetchSpots() {
+  try {
+    const res = await fetch(`${BASE_URL}/admin/spots`, { headers: getAuthHeaders() });
+    if (!res.ok) throw new Error("Failed to fetch spots");
+    const spots = await res.json();
+    spotsTableBody.innerHTML = "";
+    spots.forEach(spot => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${spot.id}</td>
+        <td>${spot.name}</td>
+        <td>${spot.address}</td>
+        <td>${spot.type}</td>
+        <td class="${spot.status}">${spot.status}</td>
+        <td>
+          <button onclick="updateStatus(${spot.id}, 'approved')">Approve</button>
+          <button onclick="updateStatus(${spot.id}, 'rejected')">Reject</button>
+          <button onclick="deleteSpot(${spot.id})">Delete</button>
+        </td>
+      `;
+      spotsTableBody.appendChild(tr);
+    });
+  } catch (err) {
+    console.error(err);
+    alert(err.message);
+  }
+}
+
+// Update status
+async function updateStatus(id, status) {
+  try {
+    const res = await fetch(`${BASE_URL}/admin/spots/${id}/status`, {
+      method: "PUT",
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ status })
+    });
+    if (!res.ok) throw new Error("Failed to update status");
+    fetchSpots();
+  } catch (err) {
+    console.error(err);
+    alert(err.message);
+  }
+}
+
+// Delete spot
+async function deleteSpot(id) {
+  if (!confirm("Are you sure?")) return;
+  try {
+    const res = await fetch(`${BASE_URL}/admin/spots/${id}`, {
+      method: "DELETE",
+      headers: getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Failed to delete spot");
+    fetchSpots();
+  } catch (err) {
+    console.error(err);
+    alert(err.message);
+  }
+}
+
+// Fetch users
+async function fetchUsers() {
+  try {
+    const res = await fetch(`${BASE_URL}/admin/users`, { headers: getAuthHeaders() });
+    if (!res.ok) throw new Error("Failed to fetch users");
+    const users = await res.json();
+    usersTableBody.innerHTML = "";
+    users.forEach(user => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${user.id}</td>
+        <td>${user.name}</td>
+        <td>${user.email}</td>
+        <td>${user.role || "user"}</td>
+      `;
+      usersTableBody.appendChild(tr);
+    });
+  } catch (err) {
+    console.error(err);
+    alert(err.message);
+  }
+}
+</script>
+
+</body>
+</html>
