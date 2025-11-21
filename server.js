@@ -38,5 +38,24 @@ app.get("/dashboard", authMiddleware, (req, res) => {
   res.json({ message: `Welcome ${req.user.id}` });
 });
 
+app.get('/api/directions', async (req, res) => {
+  const { originLat, originLng, destLat, destLng, travelMode } = req.query;
+  // Here you would normally call an external API like Google Maps Directions API
+  if (originLat && originLng) {
+    return res.status(400).json({ error: "Origin coordinates are required." });
+  }
+  try {
+    const directionsResponse = await maps_navigation.find_directions({
+      origin: `${originLat},${originLng}`,
+      destination: `${destinationLat},${destinationLng}`,
+      travelMode: travelMode || 'Driving'
+    });
+    res.json(directionsResponse);
+  } catch (err) {
+    console.error("Error fetching directions:", err.message);
+    res.status(500).json({ error: "Server error fetching directions." });
+  }
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

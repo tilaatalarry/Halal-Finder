@@ -82,6 +82,7 @@ body {
   padding: 20px;
   display: flex;
   flex-direction: column;
+  flex: 1;
 }
 
 .search-bar {
@@ -210,6 +211,8 @@ body {
   background-color: #eefaf4;
   border-radius: 0 12px 12px 0;
   overflow: hidden;
+  flex: 1;
+  min-height: 100vh;
 }
 
 #map {
@@ -354,11 +357,6 @@ body {
     border-radius: 0 0 12px 12px;
   }
 
-  .card {
-    flex-direction: column;
-    align-items: center;
-  }
-
   .card img {
     width: 100%;
     height: 180px;
@@ -465,4 +463,52 @@ body {
 
 .logout-btn:hover {
   background: #f3f6f1;
+}
+
+.directions-card button {
+    background-color: #556b2f; /* Dark Olive Green */
+    color: #f5f1ea; /* Off-White */
+    border: none;
+    padding: 10px 16px; 
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.3s, transform 0.2s;
+    margin-top: -30px; 
+}
+
+/* Styles for the "Get Directions" button on the spot cards */
+.styled-btn {
+    background-color: #556b2f; 
+    color: #f5f1ea;
+    border: none;
+    padding: 10px 16px; 
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.3s, transform 0.2s;
+    margin-top: 10px; 
+}
+
+.styled-btn:hover {
+    background-color: #6b8e23; /* slightly lighter green on hover */
+    transform: scale(1.02);
+}
+
+.directions-btn {
+  display: inline-block;
+  margin-top: 10px;
+}
+
+.card {
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+}
+
+.spot-details-wrapper {
+    display: contents;
+    flex-direction: column; /* Keeps the name/rating stacked vertically */
+    flex-shrink: 1; 
+    padding-right: 15px; /* Adds space between the text and the button */
 }

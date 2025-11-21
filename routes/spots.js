@@ -57,13 +57,13 @@ router.post("/add", authMiddleware, upload.single("image"), async (req, res) => 
   }
 
   const sql = `
-    INSERT INTO halal_spots (name, type, address, rating, lat, lng, image, description)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO halal_spots (name, type, address, rating, lat, lng, image)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
   `;
 
   try {
     const [result] = await db.query(sql, [
-      name, type, address, rating || null, lat || null, lng || null, image || null, description || null,
+      name, type, address, rating || null, lat || null, lng || null, image || null,
     ]);
     res.status(201).json({ id: result.insertId, name });
   } catch (err) {
