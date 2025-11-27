@@ -65,15 +65,13 @@ body {
   border: 2px solid #556b2f;
 }
 
-/* ===== MAIN LAYOUT ===== */
 .container {
   display: flex;
   flex: 1;
   overflow: hidden;
-  background-color: #f5f1ea; /* beige background */
+  background-color: #f5f1ea; 
 }
 
-/* ===== LISTINGS COLUMN ===== */
 .listings {
   width: 40%;
   background-color: #f5f1ea;
@@ -121,7 +119,6 @@ body {
   transform: translateY(-2px);
 }
 
-/* ===== FILTERS ===== */
 .filters {
   display: flex;
   gap: 5px;
@@ -147,7 +144,6 @@ body {
   color: #f5f1ea;
 }
 
-/* ===== RESULTS CARDS ===== */
 .card {
   display: flex;
   gap: 12px;
@@ -158,6 +154,60 @@ body {
   margin-bottom: 20px;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  min-height: 150px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-content-wrapper {
+  display: flex;
+  width: 100%;
+}
+
+.image-column {
+    text-align: center;
+    padding-right: 10px;
+}
+
+.image-column img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.detail-column {
+    flex-basis: 70%; 
+    padding-left: 10px;
+    display: flex;
+    flex-direction: column; 
+    justify-content: space-between;
+}
+
+.detail-column h3 {
+    margin: 0 0 5px 0;
+    font-size: 1.1em;
+}
+
+.detail-column p {
+    margin: 0 0 5px 0;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.image-column .tag {
+    display: none;
+    margin-top: 5px;
+    font-size: 0.8em;
+}
+
+.detail-column .directions-btn {
+    align-self: flex-start; 
+    margin-top: 5px;
+    padding: 5px 10px;
+    font-size: 0.85em;
 }
 
 .card:hover {
@@ -204,14 +254,12 @@ body {
   width: fit-content;
 }
 
-/* ===== MAP COLUMN ===== */
 .map {
   flex: 1;
   position: relative;
   background-color: #eefaf4;
   border-radius: 0 12px 12px 0;
   overflow: hidden;
-  flex: 1;
   min-height: 100vh;
 }
 
@@ -466,8 +514,8 @@ body {
 }
 
 .directions-card button {
-    background-color: #556b2f; /* Dark Olive Green */
-    color: #f5f1ea; /* Off-White */
+    background-color: #556b2f; 
+    color: #f5f1ea; 
     border: none;
     padding: 10px 16px; 
     border-radius: 50px;
@@ -477,7 +525,6 @@ body {
     margin-top: -30px; 
 }
 
-/* Styles for the "Get Directions" button on the spot cards */
 .styled-btn {
     background-color: #556b2f; 
     color: #f5f1ea;
@@ -491,7 +538,7 @@ body {
 }
 
 .styled-btn:hover {
-    background-color: #6b8e23; /* slightly lighter green on hover */
+    background-color: #6b8e23; 
     transform: scale(1.02);
 }
 
@@ -500,15 +547,20 @@ body {
   margin-top: 10px;
 }
 
-.card {
-  align-items: center;
-  justify-content: space-between;
-  padding: 15px;
-}
-
 .spot-details-wrapper {
     display: contents;
-    flex-direction: column; /* Keeps the name/rating stacked vertically */
-    flex-shrink: 1; 
-    padding-right: 15px; /* Adds space between the text and the button */
+    flex-direction: column; 
+    padding-right: 15px; 
+}
+
+.directions-card .route-steps {
+    list-style-type: decimal;
+    margin-left: 20px;
+    padding-left: 0;
+    font-size: 0.9em;
+}
+
+.directions-card .route-steps li {
+    margin-bottom: 5px;
+    line-height: 1.3;
 }

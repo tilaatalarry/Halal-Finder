@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+  <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
 </head>
 <body>
   <div id="location-permission" class="modal">
@@ -37,7 +39,7 @@
       <div class="search-bar">
         <form id="search-form">
           <input type="text" id="search-input" placeholder="Search halal spots..." />
-          <button type="submit" class="search-btn">Search</button>
+          <button type="submit" class="search-btn"><i class="fa fa-search"></i>Search</button>
         </form>
       </div>
 
@@ -98,8 +100,8 @@
       <input type="text" id="address" placeholder="City/Area" required />
       <input type="text" id="type" placeholder="Type (Restaurant, Mosque, Store)" required />
       <input type="number" id="rating" placeholder="Rating (1-5)" min="1" max="5" step="0.1" />
-      <input type="text" id="lat" placeholder="Latitude" readonly />
-      <input type="text" id="lng" placeholder="Longitude" readonly />
+      <input type="text" id="lat" placeholder="Latitude"/>
+      <input type="text" id="lng" placeholder="Longitude"/>
       <div class="upload--section">
         <label for =spot-image>Upload Image</label>
         <input type="file" id="image" accept="image/*" />

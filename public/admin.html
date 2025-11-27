@@ -1,212 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    table { border-collapse: collapse; width: 100%; margin-bottom: 40px; }
-    th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
-    th { background-color: #f2f2f2; }
-    button { margin-right: 5px; padding: 5px 10px; cursor: pointer; }
-    .approved { color: green; }
-    .rejected { color: red; }
-    .pending { color: orange; }
-    #loginForm { margin-bottom: 30px; }
-    #loginForm input { margin-right: 10px; padding: 5px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Halal Finder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #f3f4f6; }
+        .topbar { background-color: #10b981; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .logo { color: white; font-size: 1.5rem; font-weight: 700; text-decoration: none; }
+        .admin-container { max-width: 90rem; margin: 2rem auto; padding: 0 1rem; }
+        .btn-outline { background-color: white; color: #10b981; padding: 0.5rem 1rem; border: 2px solid white; border-radius: 0.5rem; transition: background-color 0.3s, color 0.3s; font-weight: 600; }
+        .btn-outline:hover { background-color: #059669; color: white; border-color: #059669; }
+        .admin-panel { background-color: white; padding: 2rem; border-radius: 0.75rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 1.5rem; }
+        .message-box 
+        .min-w-full { width: 100%; }
+    </style>
 </head>
 <body>
+    <div class="topbar">
+        <a href="index.html" class="logo">Halal Finder Admin</a>
+        <div class="nav-actions">
+            <button class="btn-outline" id="admin-logout-btn">Log Out</button> 
+        </div>
+    </div>
+    
+    <div class="admin-container">
+        <h1 class="text-3xl font-bold text-gray-900 mb-6">System Dashboard</h1>
+        <div class="admin-panel">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">Spot Moderation Queue</h2>
+            <div id="loading-message" class="text-center p-4 text-gray-600">
+                Loading spot data...
+            </div>
 
-<h1>Admin Dashboard</h1>
+            <div class="inline-block min-w-full py-2 align-middle">
+                <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-lg">
+                    <table class="min-w-full divide-y divide-gray-300">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="relative px-6 py-3">
+                                    <span class="sr-only">Actions</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="spot-table-body" class="divide-y divide-gray-200 bg-white">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="admin-panel mt-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">User Accounts</h2>
 
-<!-- Admin login form -->
-<div id="loginDiv">
-  <h2>Admin Login</h2>
-  <form id="loginForm">
-    <input type="email" id="email" placeholder="Email" required>
-    <input type="password" id="password" placeholder="Password" required>
-    <button type="submit">Login</button>
-  </form>
-  <p id="loginError" style="color:red;"></p>
-</div>
+            <div class="inline-block min-w-full py-2 align-middle">
+                <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-lg">
+                    <table class="min-w-full divide-y divide-gray-300">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                            </tr>
+                        </thead>
+                        <tbody id="user-table-body" class="divide-y divide-gray-200 bg-white">
+                            <tr><td colspan="3" class="text-center py-4 text-gray-400">Loading users...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-<!-- Dashboard content -->
-<div id="dashboard" style="display:none;">
-  <h2>Halal Spots</h2>
-  <table id="spotsTable">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Address</th>
-        <th>Type</th>
-        <th>Status</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-
-  <h2>Users</h2>
-  <table id="usersTable">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Role</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-</div>
-
-<script>
-const BASE_URL = "http://localhost:5000";
-let token = localStorage.getItem("token");
-
-// DOM elements
-const loginDiv = document.getElementById("loginDiv");
-const dashboardDiv = document.getElementById("dashboard");
-const loginForm = document.getElementById("loginForm");
-const loginError = document.getElementById("loginError");
-const spotsTableBody = document.querySelector("#spotsTable tbody");
-const usersTableBody = document.querySelector("#usersTable tbody");
-
-// If token exists, show dashboard
-if (token) {
-  loginDiv.style.display = "none";
-  dashboardDiv.style.display = "block";
-  fetchSpots();
-  fetchUsers();
-}
-
-// Handle login form
-loginForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  loginError.textContent = "";
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  try {
-    const res = await fetch(`${BASE_URL}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password })
-    });
-
-    const data = await res.json();
-    if (!res.ok) {
-      loginError.textContent = data.message || "Login failed";
-      return;
-    }
-
-    token = data.token;
-    localStorage.setItem("token", token);
-
-    loginDiv.style.display = "none";
-    dashboardDiv.style.display = "block";
-
-    fetchSpots();
-    fetchUsers();
-
-  } catch (err) {
-    console.error(err);
-    loginError.textContent = "Server error";
-  }
-});
-
-// Helper to add Authorization header
-function getAuthHeaders() {
-  return { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" };
-}
-
-// Fetch spots
-async function fetchSpots() {
-  try {
-    const res = await fetch(`${BASE_URL}/admin/spots`, { headers: getAuthHeaders() });
-    if (!res.ok) throw new Error("Failed to fetch spots");
-    const spots = await res.json();
-    spotsTableBody.innerHTML = "";
-    spots.forEach(spot => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${spot.id}</td>
-        <td>${spot.name}</td>
-        <td>${spot.address}</td>
-        <td>${spot.type}</td>
-        <td class="${spot.status}">${spot.status}</td>
-        <td>
-          <button onclick="updateStatus(${spot.id}, 'approved')">Approve</button>
-          <button onclick="updateStatus(${spot.id}, 'rejected')">Reject</button>
-          <button onclick="deleteSpot(${spot.id})">Delete</button>
-        </td>
-      `;
-      spotsTableBody.appendChild(tr);
-    });
-  } catch (err) {
-    console.error(err);
-    alert(err.message);
-  }
-}
-
-// Update status
-async function updateStatus(id, status) {
-  try {
-    const res = await fetch(`${BASE_URL}/admin/spots/${id}/status`, {
-      method: "PUT",
-      headers: getAuthHeaders(),
-      body: JSON.stringify({ status })
-    });
-    if (!res.ok) throw new Error("Failed to update status");
-    fetchSpots();
-  } catch (err) {
-    console.error(err);
-    alert(err.message);
-  }
-}
-
-// Delete spot
-async function deleteSpot(id) {
-  if (!confirm("Are you sure?")) return;
-  try {
-    const res = await fetch(`${BASE_URL}/admin/spots/${id}`, {
-      method: "DELETE",
-      headers: getAuthHeaders()
-    });
-    if (!res.ok) throw new Error("Failed to delete spot");
-    fetchSpots();
-  } catch (err) {
-    console.error(err);
-    alert(err.message);
-  }
-}
-
-// Fetch users
-async function fetchUsers() {
-  try {
-    const res = await fetch(`${BASE_URL}/admin/users`, { headers: getAuthHeaders() });
-    if (!res.ok) throw new Error("Failed to fetch users");
-    const users = await res.json();
-    usersTableBody.innerHTML = "";
-    users.forEach(user => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${user.id}</td>
-        <td>${user.name}</td>
-        <td>${user.email}</td>
-        <td>${user.role || "user"}</td>
-      `;
-      usersTableBody.appendChild(tr);
-    });
-  } catch (err) {
-    console.error(err);
-    alert(err.message);
-  }
-}
-</script>
-
+    </div>
+    <script src="admin.js"></script>
 </body>
 </html>
