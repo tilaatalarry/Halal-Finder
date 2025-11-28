@@ -149,7 +149,7 @@ function clearDirections() {
     const directionsResultDiv = document.getElementById('directions-result') || document.getElementById('results');
     if (directionsResultDiv) directionsResultDiv.innerHTML = '';
     
-    fetchAndRenderHalalSpots(); 
+    fetchAndRenderHalalSpots("", "all"); 
 }
 
 function getDirections(destinationLat, destinationLng, destinationName) {
@@ -209,9 +209,13 @@ function createMapMarker(place) {
     if (!map) return;
     const lat = parseFloat(place.lat);
     const lng = parseFloat(place.lng);
+
+    if (typeof place.lat === 'string' || typeof place.lng === 'string') {
+        console.warn(`[DEBUG] Spot "${place.name}" has string coordinates. Original: Lat='${place.lat}', Lng='${place.lng}'. Parsed: Lat=${lat}, Lng=${lng}.`);
+    }
     if (Number.isNaN(lat) || Number.isNaN(lng)) {
-        console.warn(`Skipping marker for ${place.name}: Invalid Lat/Lng values.`, place.lat, place.lng);
-        return; 
+        console.warn(`Skipping marker for ${place.name}: Invalid coordinates detected after parsing. Check database values.`);
+        return;
     }
 
     const marker = L.marker([lat, lng], {
@@ -242,9 +246,10 @@ function focusOnMarker(place) {
 window.addEventListener("DOMContentLoaded", () => {
     if (!window.location.pathname.endsWith('/admin.html')) {
         initMap(); 
+        // applySearchAndFilters();
     }
 
-    const searchInput = document.getElementById("search-input") || document.querySelector(".search-bar input");
+    const searchInput = document.getElementById("") || document.querySelector(".search-bar input");
     const searchBtn = document.querySelector(".search-btn");
     const filterBtns = Array.from(document.querySelectorAll(".filter"));
     const addSpotBtn = document.getElementById("add-spot-btn");
@@ -258,7 +263,8 @@ window.addEventListener("DOMContentLoaded", () => {
 
     filterBtns.forEach((btn) => {
         btn.addEventListener("click", () => {
-            const selectedType = btn.dataset.tag || btn.dataset.type;
+            const rawType = btn.dataset.tag || btn.dataset.type;
+            const selectedType = rawType && rawType.trim() !== '' ? rawType : "all";
 
             filterBtns.forEach((b) => b.classList.remove("active"));
             btn.classList.add("active");
@@ -288,7 +294,7 @@ function setupModalsAndForms() {
     const addSpotBtn = document.getElementById("add-spot-btn");
     const signupModal = document.getElementById("signup-modal");
     const closeSignup = document.getElementById("close-signup");
-    const loginModal = document.getElementById("login-modal");
+    const loginModal = document.getElementById("login-modal"); 
     const closeLogin = document.getElementById("close-login");
     const profileIcon = document.getElementById("profile-icon");
     const profileMenu = document.getElementById("profile-menu");

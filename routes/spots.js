@@ -13,7 +13,7 @@ const sendAwaitingApprovalEmail = async (spotName, recipientEmail) => {
         from: process.env.EMAIL_USER,
         to: recipientEmail,
         subject: 'Halal Finder: Spot Submission Received - Awaiting Approval',
-        text: `Hello,\n\nThank thank you for submitting "${spotName}" to Halal Finder.\n\nYour spot has been received and is currently in our moderation queue awaiting approval by our admin team. We will notify you via this email once it goes live.\n\nThank you for contributing to the community!`,
+        text: `Hello,\n\nThank you for submitting "${spotName}" to Halal Finder.\n\nYour spot has been received and is currently in our moderation queue awaiting approval by our admin team. We will notify you via this email once it goes live.\n\nThank you for contributing to the community!`,
         html: `<p>Hello,</p>
                <p>Thank you for submitting <strong>${spotName}</strong> to Halal Finder.</p>
                <p>Your spot has been received and is currently in our moderation queue awaiting approval by our admin team. We will notify you via this email once it goes live.</p>
@@ -42,7 +42,7 @@ router.get('/', async (req, res) => {
         params.push(`%${search}%`, `%${search}%`);
     }
     
-    if (type) {
+    if (type && type !== 'all') {
         whereClauses.push('type = ?');
         params.push(type);
     }
